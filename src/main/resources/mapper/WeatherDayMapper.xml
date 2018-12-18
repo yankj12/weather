@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 指定dao -->
+<mapper namespace="com.yan.weather.mapper.WeatherDayMapper">
+
+	<insert id="insertWeatherDay" parameterType="com.yan.weather.schema.mysql.WeatherDay">
+    	insert into weather_day 
+    	(areaName, areaCode, date, year, month, day, temperatureMax, temperatureMin, summary, windDirection, windScale, remark, validStatus, insertTime, updateTime) 
+    	values 
+    	(#{areaName}, #{areaCode}, #{date}, #{year}, #{month}, #{day}, #{temperatureMax}, #{temperatureMin}, #{summary}, #{windDirection}, #{windScale}, #{remark}, #{validStatus}, #{insertTime}, #{updateTime})
+    </insert>
+    
+    <insert id="insertBatchWeatherDay" parameterType="java.util.List">
+    	insert into weather_day 
+    	(areaName, areaCode, date, year, month, day, temperatureMax, temperatureMin, summary, windDirection, windScale, remark, validStatus, insertTime, updateTime) 
+    	values 
+    	<foreach collection="list" item="item" index="index" separator=",">
+            (#{item.areaName}, #{item.areaCode}, #{item.date}, #{item.year}, #{item.month}, #{item.day}, #{item.temperatureMax}, #{item.temperatureMin}, #{item.summary}, #{item.windDirection}, #{item.windScale}, #{item.remark}, #{item.validStatus}, #{item.insertTime}, #{item.updateTime})
+        </foreach>
+    </insert>
+    
+    <!--  id指定方法名  parameterType指定参数类型 resultType返回参数类型 #{userName}对应User表里面的字段N要大写不然映射报错   -->
+    <select id="findWeatherDaysByDate" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherDay">
+        SELECT * FROM weather_day WHERE date = #{date} and areaName = #{areaName}
+    </select>
+	
+	<select id="findWeatherDaysByYear" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherDay">
+        SELECT * FROM weather_day WHERE year = #{year} and areaName = #{areaName}
+    </select>
+    
+    <select id="findWeatherDaysByMonth" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherDay">
+        SELECT * FROM weather_day WHERE month = #{month} and areaName = #{areaName}
+    </select>
+    
+    <select id="findWeatherDaysByMonth" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherDay">
+        SELECT * FROM weather_day WHERE month = #{month} and areaName = #{areaName}
+    </select>
+    
+	<select id="countWeatherDaysByCondition" parameterType="String" resultType="int">
+        SELECT count(*) FROM weather_day
+        <trim prefix="where" prefixOverrides="and|or"> 
+    		<if test="areaName != null and areaName != ''">
+    			areaName=#{areaName}
+    		</if>
+    		<if test="areaCode != null and areaCode != ''">
+    			areaCode=#{areaCode}
+    		</if>
+    		<if test="date != null and date != ''">
+    			and date = #{date}
+    		</if>
+    		<if test="year != null and year != ''">
+    			and year = #{year}
+    		</if>
+    		<if test="month != null and month != ''">
+    			and month = #{month}
+    		</if>
+    		<if test="day != null and day != ''">
+    			and day = #{day}
+    		</if>
+    		<if test="validStatus != null and validStatus != ''">
+    			and validStatus = #{validStatus}
+    		</if>
+    		
+    	</trim>
+    </select>
+    
+    <select id="findWeatherDaysByCondition" parameterType="java.util.Map"  resultType="com.yan.weather.schema.mysql.WeatherDay">
+    	select * from weather_day
+    	<trim prefix="where" prefixOverrides="and|or"> 
+    		<if test="areaName != null and areaName != ''">
+    			areaName=#{areaName}
+    		</if>
+    		<if test="areaCode != null and areaCode != ''">
+    			areaCode=#{areaCode}
+    		</if>
+    		<if test="date != null and date != ''">
+    			and date = #{date}
+    		</if>
+    		<if test="year != null and year != ''">
+    			and year = #{year}
+    		</if>
+    		<if test="month != null and month != ''">
+    			and month = #{month}
+    		</if>
+    		<if test="day != null and day != ''">
+    			and day = #{day}
+    		</if>
+    		<if test="validStatus != null and validStatus != ''">
+    			and validStatus = #{validStatus}
+    		</if>
+    		
+    	</trim>
+    	order by updateTime desc
+    	limit #{offset},#{pageSize}
+    </select>
+    
+    <delete id="deleteWeatherDayByDateArea" parameterType="java.util.Map">
+    	delete from weather_day where date = #{date} and areaName = #{areaName}
+    </delete>
+    
+    <update id="updateWeatherDayByDateArea" parameterType="com.yan.weather.schema.mysql.WeatherDay">
+    	update weather_day set areaCode = #{areaCode}, year=#{year}, month=#{month}, day=#{day}, temperatureMax=#{temperatureMax}, temperatureMin=#{temperatureMin}, summary=#{summary}, windDirection=#{windDirection}, windScale=#{windScale}, remark=#{remark}, validStatus=#{validStatus}, updateTime=#{updateTime}
+    	where date = #{date} and areaName = #{areaName}
+    </update>
+</mapper>
