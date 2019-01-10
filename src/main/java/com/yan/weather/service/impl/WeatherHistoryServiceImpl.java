@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yan.weather.mapper.WeatherCityMapper;
+import com.yan.weather.mapper.WeatherMonthMapper;
 import com.yan.weather.schema.mysql.WeatherCity;
 import com.yan.weather.schema.mysql.WeatherMonth;
 import com.yan.weather.service.facade.WeatherHistoryService;
@@ -48,6 +49,9 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 	
 	@Autowired
 	WeatherCityMapper weatherCityMapper;
+	
+	@Autowired
+	WeatherMonthMapper weatherMonthMapper;
 	
 	@Override
 	public void crawlWeatherCity() {
@@ -136,10 +140,74 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 		
 	}
 
-	@Override
-	public void crawlWeatherHistoryByCity(WeatherCity weatherCity) {
+	public void crawlWeatherMonthByAreaCode(String areaCode) {
 		// TODO Auto-generated method stub
 		// http://lishi.tianqi.com/beijing/index.html
+		String url = "http://lishi.tianqi.com/" + areaCode + "/index.html";
+		
+		Map<String, String> requestHeaders = new HashMap<>();
+		
+		requestHeaders.put("Host", "lishi.tianqi.com");
+		requestHeaders.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0");
+		requestHeaders.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+		requestHeaders.put("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2");
+		requestHeaders.put("Accept-Encoding", "gzip, deflate");
+		requestHeaders.put("Connection", "keep-alive");
+		requestHeaders.put("Cookie", "cs_prov=04; cs_city=0401; ccity=101040100; Hm_lvt_ab6a683aa97a52202eab5b3a9042a8d2=1545100007,1547086544; UM_distinctid=168358b39e22db-0639973eb72783-143a7540-1fa400-168358b39e327f; CNZZDATA1275796416=1915182485-1547084074-%7C1547084074; Hm_lpvt_ab6a683aa97a52202eab5b3a9042a8d2=1547086573");
+		
+		String content = this.requestUrlByGetMethod(url, requestHeaders, "utf-8");
+		System.out.println(content);
+		
+		if(content != null) {
+			Document document=Jsoup.parse(content);
+			Element cityAllDivElement = document.select("div.tqtongji1").first();
+			List<Element> cityMonthliElements = cityAllDivElement.select("li");
+			
+			if(cityMonthliElements != null){
+				for(Element lielement:cityMonthliElements){
+					Element aElement = lielement.select("a").first();
+					String href = aElement.attr("href");
+					
+					//text​() Gets the combined text of this element and all its children. 
+					//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
+					String urlName = aElement.ownText();
+					
+					if(href != null && !"".equals(href.trim())){
+						if(!href.startsWith("#")){
+							WeatherMonth weatherMonth = new WeatherMonth();
+							
+							// http://lishi.tianqi.com/anda/index.html
+							String yearMonth = this.substrYearMonthFromUrl(href);
+							
+							weatherMonth.setAreaCode(areaCode);
+							
+							weatherMonth.setYearMonth(yearMonth);
+							
+							weatherMonth.setUrl(href);
+							weatherMonth.setUrlName(urlName);
+							
+							weatherMonth.setCrawlCount(0);
+							weatherMonth.setCrawlFlag(WeatherCity.CRAWL_FLAG_INITIAL);
+							weatherMonth.setValidStatus("1");
+							
+							weatherMonth.setInsertTime(new Date());
+							weatherMonth.setUpdateTime(new Date());
+							
+							Map<String, Object> condition = new HashMap<>();
+							condition.put("yearMonth", yearMonth);
+							condition.put("areaCode", areaCode);
+							
+							Long resultCount = weatherMonthMapper.countWeatherMonthsByCondition(condition);
+							if(resultCount == 0) {
+								weatherMonthMapper.insertWeatherMonth(weatherMonth);
+								logger.debug("保存城市天气年月信息," + areaCode + "," + yearMonth);
+							}
+							
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -211,7 +279,8 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 	
 	public static void main(String[] args) {
 		WeatherHistoryServiceImpl weatherHistoryServiceImpl = new WeatherHistoryServiceImpl();
-		weatherHistoryServiceImpl.crawlWeatherCity();
+//		weatherHistoryServiceImpl.crawlWeatherCity();
+		System.out.println(weatherHistoryServiceImpl.substrYearMonthFromUrl("http://lishi.tianqi.com/beijing/201812.html"));
 	}
 	
 	/**
@@ -232,5 +301,25 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 		areaCode = subString.substring(0, index2);
 		
 		return areaCode;
+	}
+	
+	/**
+	 * 从url链接中截取年月
+	 * yyyyMM
+	 * 
+	 * @param href
+	 * @return
+	 */
+	public String substrYearMonthFromUrl(String href){
+		String yearMonth = null;
+		
+		// http://lishi.tianqi.com/beijing/201812.html
+		// 从url中截取地区代码的逻辑
+		// 从最后一个/到.htm之间的为年月
+		int index1 = href.contains("/")?href.lastIndexOf("/")+1:0;
+		int index2 = href.contains(".htm")?href.indexOf(".htm"):href.length();
+		yearMonth = href.substring(index1, index2);
+		
+		return yearMonth;
 	}
 }

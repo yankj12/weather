@@ -5,25 +5,25 @@
 
 	<insert id="insertWeatherMonth" parameterType="com.yan.weather.schema.mysql.WeatherMonth">
     	insert into weather_month 
-    	(areaName, areaCode, month, urlName, url, crawlFlag, crawlCount, validStatus, insertTime, updateTime) 
+    	(areaName, areaCode, yearMonth, urlName, url, crawlFlag, crawlCount, validStatus, insertTime, updateTime) 
     	values 
-    	(#{areaName}, #{areaCode}, #{month}, #{urlName}, #{url}, #{crawlFlag}, #{crawlCount}, #{validStatus}, #{insertTime}, #{updateTime})
+    	(#{areaName}, #{areaCode}, #{yearMonth}, #{urlName}, #{url}, #{crawlFlag}, #{crawlCount}, #{validStatus}, #{insertTime}, #{updateTime})
     </insert>
     
     <insert id="insertBatchWeatherMonth" parameterType="java.util.List">
     	insert into weather_month 
-    	(areaName, areaCode, date, year, month, day, temperatureMax, temperatureMin, summary, windDirection, windScale, remark, validStatus, insertTime, updateTime) 
+    	(areaName, areaCode, date, year, yearMonth, day, temperatureMax, temperatureMin, summary, windDirection, windScale, remark, validStatus, insertTime, updateTime) 
     	values 
     	<foreach collection="list" item="item" index="index" separator=",">
-            (#{item.areaName}, #{item.areaCode}, #{item.month}, #{item.urlName}, #{item.url}, #{item.crawlFlag}, #{item.crawlCount}, #{item.validStatus}, #{item.insertTime}, #{item.updateTime})
+            (#{item.areaName}, #{item.areaCode}, #{item.yearMonth}, #{item.urlName}, #{item.url}, #{item.crawlFlag}, #{item.crawlCount}, #{item.validStatus}, #{item.insertTime}, #{item.updateTime})
         </foreach>
     </insert>
     
     <select id="findWeatherMonthsByMonthArea" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherMonth">
-        SELECT * FROM weather_month WHERE month = #{month} and areaName = #{areaName}
+        SELECT * FROM weather_month WHERE yearMonth = #{yearMonth} and areaName = #{areaName}
     </select>
     
-	<select id="countWeatherMonthsByCondition" parameterType="String" resultType="int">
+	<select id="countWeatherMonthsByCondition" parameterType="String" resultType="long">
         SELECT count(*) FROM weather_month
         <trim prefix="where" prefixOverrides="and|or"> 
     		<if test="areaName != null and areaName != ''">
@@ -32,8 +32,8 @@
     		<if test="areaCode != null and areaCode != ''">
     			areaCode=#{areaCode}
     		</if>
-    		<if test="month != null and month != ''">
-    			and month = #{month}
+    		<if test="yearMonth != null and yearMonth != ''">
+    			and yearMonth = #{yearMonth}
     		</if>
     		<if test="crawlFlag != null and crawlFlag != ''">
     			and crawlFlag = #{crawlFlag}
@@ -53,8 +53,8 @@
     		<if test="areaCode != null and areaCode != ''">
     			areaCode=#{areaCode}
     		</if>
-    		<if test="month != null and month != ''">
-    			and month = #{month}
+    		<if test="yearMonth != null and yearMonth != ''">
+    			and yearMonth = #{yearMonth}
     		</if>
     		<if test="crawlFlag != null and crawlFlag != ''">
     			and crawlFlag = #{crawlFlag}
@@ -68,11 +68,11 @@
     </select>
     
     <delete id="deleteWeatherMonthByMonthArea" parameterType="java.util.Map">
-    	delete from weather_month where month = #{month} and areaName = #{areaName}
+    	delete from weather_month where yearMonth = #{yearMonth} and areaName = #{areaName}
     </delete>
     
     <update id="updateWeatherMonthByMonthArea" parameterType="com.yan.weather.schema.mysql.WeatherMonth">
     	update weather_month set areaCode=#{areaCode}, urlName=#{urlName}, url=#{url}, crawlFlag=#{crawlFlag}, crawlCount=#{crawlCount}, validStatus=#{validStatus}, updateTime=#{updateTime}
-    	where month = #{month} and areaName = #{areaName}
+    	where yearMonth = #{yearMonth} and areaName = #{areaName}
     </update>
 </mapper>

@@ -32,8 +32,14 @@ public class WeatherRestController {
 	}
 	
 	@GetMapping("/crawlWeatherMonth") 
-	public String crawlWeatherMonth(@RequestParam(required = false) String areaCode){
-		
+	public String crawlWeatherMonth(@RequestParam(required = false, defaultValue = "beijing") String areaCode){
+		logger.debug("================= crawlWeatherMonth, areaCode=" + areaCode +  " =================");
+		try {
+			weatherHistoryService.crawlWeatherMonthByAreaCode(areaCode);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
 		return "success";
 	}
 }
