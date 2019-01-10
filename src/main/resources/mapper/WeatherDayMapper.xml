@@ -32,7 +32,7 @@
         SELECT * FROM weather_day WHERE month = #{month} and areaName = #{areaName}
     </select>
 
-	<select id="countWeatherDaysByCondition" parameterType="String" resultType="int">
+	<select id="countWeatherDaysByCondition" parameterType="String" resultType="long">
         SELECT count(*) FROM weather_day
         <trim prefix="where" prefixOverrides="and|or"> 
     		<if test="areaName != null and areaName != ''">

@@ -23,7 +23,7 @@
         SELECT * FROM weather_city WHERE areaName = #{areaName}
     </select>
     
-	<select id="countWeatherCitysByCondition" parameterType="String" resultType="int">
+	<select id="countWeatherCitysByCondition" parameterType="String" resultType="long">
         SELECT count(*) FROM weather_city
         <trim prefix="where" prefixOverrides="and|or"> 
     		<if test="areaName != null and areaName != ''">
