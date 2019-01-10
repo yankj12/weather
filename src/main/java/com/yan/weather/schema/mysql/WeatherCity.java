@@ -5,6 +5,11 @@ import java.util.Date;
 
 public class WeatherCity implements Serializable{
 
+	public static final String CRAWL_FLAG_INITIAL = "0";
+	public static final String CRAWL_FLAG_SUCCESS = "1";
+	public static final String CRAWL_FLAG_FAIL = "2";
+	
+	
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
@@ -23,6 +28,8 @@ public class WeatherCity implements Serializable{
 	private String crawlFlag;
 	
 	private Integer crawlCount;
+	
+	private String remark;
 	
 	/**
 	 * 有效状态
@@ -117,6 +124,14 @@ public class WeatherCity implements Serializable{
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 	
 }

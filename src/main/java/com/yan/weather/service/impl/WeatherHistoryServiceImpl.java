@@ -2,6 +2,7 @@ package com.yan.weather.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +19,14 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yan.weather.mapper.WeatherCityMapper;
 import com.yan.weather.schema.mysql.WeatherCity;
 import com.yan.weather.schema.mysql.WeatherMonth;
@@ -30,7 +35,8 @@ import com.yan.weather.service.facade.WeatherHistoryService;
 @Service
 public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 
-
+	private static Logger logger = LoggerFactory.getLogger(WeatherHistoryServiceImpl.class);
+	
 	@Value("${proxy.useProxy}")
 	private boolean useProxy;
 
@@ -72,28 +78,57 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 		String content = this.requestUrlByGetMethod(url, requestHeaders, "utf-8");
 		System.out.println(content);
 		
-		Document document=Jsoup.parse(content);
-		Element cityAllDivElement = document.select("div#cityall").first();
-		List<Element> cityliElements = cityAllDivElement.select("li");
-		
-		List<WeatherCity> weatherCities = new ArrayList<WeatherCity>();
-		
-		if(cityliElements != null){
-			for(Element lielement:cityliElements){
-				Element aElement = lielement.select("a").first();
-				String href = aElement.attr("href");
-				
-				//text​() Gets the combined text of this element and all its children. 
-				//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
-				String linkText = aElement.ownText();
-				
-				if(href != null && !"".equals(href.trim())){
-					if(!href.startsWith("#")){
-						WeatherCity weatherCity = new WeatherCity();
-						
-						// http://lishi.tianqi.com/anda/index.html
-						String areaCode = this.substrAreaCodeFromUrl(href);
-						
+		if(content != null) {
+			Document document=Jsoup.parse(content);
+			Element cityAllDivElement = document.select("div#cityall").first();
+			List<Element> cityliElements = cityAllDivElement.select("li");
+			
+			List<WeatherCity> weatherCities = new ArrayList<WeatherCity>();
+			
+			if(cityliElements != null){
+				for(Element lielement:cityliElements){
+					Element aElement = lielement.select("a").first();
+					String href = aElement.attr("href");
+					
+					//text​() Gets the combined text of this element and all its children. 
+					//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
+					String areaName = aElement.ownText();
+					
+					if(href != null && !"".equals(href.trim())){
+						if(!href.startsWith("#")){
+							WeatherCity weatherCity = new WeatherCity();
+							
+							// http://lishi.tianqi.com/anda/index.html
+							String areaCode = this.substrAreaCodeFromUrl(href);
+							
+							weatherCity.setAreaName(areaName);
+							weatherCity.setAreaCode(areaCode);
+							weatherCity.setUrl(href);
+							
+							weatherCity.setCrawlCount(0);
+							weatherCity.setCrawlFlag(WeatherCity.CRAWL_FLAG_INITIAL);
+							weatherCity.setValidStatus("1");
+							
+							weatherCity.setInsertTime(new Date());
+							weatherCity.setUpdateTime(new Date());
+							
+							WeatherCity weatherCityTemp = weatherCityMapper.findWeatherCityByAreaName(areaName);
+							if(weatherCityTemp == null) {
+								weatherCityMapper.insertWeatherCity(weatherCity);
+								
+//							ObjectMapper mapper = new ObjectMapper();
+//					        String jsonString = null;
+//							try {
+//								jsonString = mapper.writeValueAsString(weatherCity);
+//								logger.debug("保存城市信息," + jsonString);
+//							} catch (JsonProcessingException e) {
+//								e.printStackTrace();
+//							}
+								logger.debug("保存城市信息," + areaName);
+							}
+							
+							//weatherCities.add(weatherCity);
+						}
 					}
 				}
 			}
@@ -121,10 +156,6 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 	 * @return
 	 */
 	public String requestUrlByGetMethod(String url, Map<String, String> requestHeaders, String charset) {
-		// TODO 为了测试设置下面的代理
-		useProxy = true;
-		proxyIp = "10.1.249.58";
-		port = 3128;
 		
 		CloseableHttpClient httpclient = null;
 		

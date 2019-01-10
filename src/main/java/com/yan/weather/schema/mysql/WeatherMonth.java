@@ -15,7 +15,7 @@ public class WeatherMonth implements Serializable{
 	private String areaCode;
 	
 	// 月，格式yyyyMM
-	private String month;
+	private String yearMonth;
 	
 	private String urlName;
 	
@@ -65,12 +65,12 @@ public class WeatherMonth implements Serializable{
 		this.areaCode = areaCode;
 	}
 
-	public String getMonth() {
-		return month;
+	public String getYearMonth() {
+		return yearMonth;
 	}
 
-	public void setMonth(String month) {
-		this.month = month;
+	public void setYearMonth(String yearMonth) {
+		this.yearMonth = yearMonth;
 	}
 
 	public String getUrlName() {

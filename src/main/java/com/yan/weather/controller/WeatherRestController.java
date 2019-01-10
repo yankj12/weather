@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,8 +19,9 @@ public class WeatherRestController {
 	@Autowired
 	WeatherHistoryService weatherHistoryService;
 	
-	@GetMapping("/crawlCityList") 
+	@RequestMapping("/crawlCityList") 
 	public String crawlCityList(@RequestParam(required = false) String areaCode){ 
+		logger.debug("================= crawlCityList =================");
 		try {
 			weatherHistoryService.crawlWeatherCity();
 		} catch (Exception e) {
@@ -30,8 +32,8 @@ public class WeatherRestController {
 	}
 	
 	@GetMapping("/crawlWeatherMonth") 
-	public String crawlWeatherMonth(@RequestParam(required = false) String areaCode){ 
-		weatherHistoryService.crawlWeatherCity();
+	public String crawlWeatherMonth(@RequestParam(required = false) String areaCode){
+		
 		return "success";
 	}
 }
