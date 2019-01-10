@@ -22,3 +22,22 @@ CREATE TABLE
     )
     ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- 创建weather_city表
+CREATE TABLE
+    weather_city
+    (
+        id BIGINT NOT NULL AUTO_INCREMENT,
+        areaName VARCHAR(40),
+		areaCode VARCHAR(40),
+		indexLetter VARCHAR(10),
+		url VARCHAR(255),
+		crawlFlag VARCHAR(2),
+		crawlCount int,
+		remark VARCHAR(255),
+		validStatus VARCHAR(2),
+        insertTime DATETIME,
+        updateTime DATETIME,
+        PRIMARY KEY (id)
+    )
+    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 指定dao -->
+<mapper namespace="com.yan.weather.mapper.WeatherCityMapper">
+
+	<insert id="insertWeatherCity" parameterType="com.yan.weather.schema.mysql.WeatherCity">
+    	insert into weather_city 
+    	(areaName, areaCode, indexLetter, url, crawlFlag, crawlCount, remark, validStatus, insertTime, updateTime) 
+    	values 
+    	(#{areaName}, #{areaCode}, #{indexLetter}, #{url}, #{crawlFlag}, #{crawlCount}, #{remark}, #{validStatus}, #{insertTime}, #{updateTime})
+    </insert>
+    
+    <insert id="insertBatchWeatherCity" parameterType="java.util.List">
+    	insert into weather_city
+    	(areaName, areaCode, indexLetter, url, crawlFlag, crawlCount, remark, validStatus, insertTime, updateTime) 
+    	values 
+    	<foreach collection="list" item="item" index="index" separator=",">
+            (#{item.areaName}, #{item.areaCode}, #{item.indexLetter}, #{item.url}, #{item.crawlFlag}, #{item.crawlCount}, #{item.remark}, #{item.validStatus}, #{item.insertTime}, #{item.updateTime})
+        </foreach>
+    </insert>
+    
+    <select id="findWeatherCityByAreaName" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherCity">
+        SELECT * FROM weather_city WHERE areaName = #{areaName}
+    </select>
+    
+	<select id="countWeatherCitysByCondition" parameterType="String" resultType="int">
+        SELECT count(*) FROM weather_city
+        <trim prefix="where" prefixOverrides="and|or"> 
+    		<if test="areaName != null and areaName != ''">
+    			areaName=#{areaName}
+    		</if>
+    		<if test="areaCode != null and areaCode != ''">
+    			areaCode=#{areaCode}
+    		</if>
+    		<if test="crawlFlag != null and crawlFlag != ''">
+    			and crawlFlag = #{crawlFlag}
+    		</if>
+    		<if test="validStatus != null and validStatus != ''">
+    			and validStatus = #{validStatus}
+    		</if>
+    		
+    	</trim>
+    </select>
+    
+    <select id="findWeatherCitysByCondition" parameterType="java.util.Map"  resultType="com.yan.weather.schema.mysql.WeatherCity">
+    	select * from weather_month
+    	<trim prefix="where" prefixOverrides="and|or"> 
+    		<if test="areaName != null and areaName != ''">
+    			areaName=#{areaName}
+    		</if>
+    		<if test="areaCode != null and areaCode != ''">
+    			areaCode=#{areaCode}
+    		</if>
+    		<if test="crawlFlag != null and crawlFlag != ''">
+    			and crawlFlag = #{crawlFlag}
+    		</if><if test="validStatus != null and validStatus != ''">
+    			and validStatus = #{validStatus}
+    		</if>
+    		
+    	</trim>
+    	order by updateTime desc
+    	limit #{offset},#{pageSize}
+    </select>
+    
+</mapper>
