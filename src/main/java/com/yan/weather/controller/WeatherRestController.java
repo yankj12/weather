@@ -42,4 +42,16 @@ public class WeatherRestController {
 		}
 		return "success";
 	}
+	
+	@RequestMapping("/crawlWeatherDay") 
+	public String crawlWeatherDay(@RequestParam(required = true) String areaCode,@RequestParam(required = true) String yearMonth){ 
+		logger.debug("================= crawlCityList =================");
+		try {
+			weatherHistoryService.crawlWeatherHistoryByMonth(areaCode, yearMonth);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
+		return "success";
+	}
 }

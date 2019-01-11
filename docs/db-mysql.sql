@@ -5,6 +5,7 @@ CREATE TABLE
     (
         id BIGINT NOT NULL AUTO_INCREMENT,
         areaName VARCHAR(40),
+        areaCode VARCHAR(40),
 		date VARCHAR(12),
 		year VARCHAR(6),
 		month VARCHAR(2),
@@ -59,3 +60,6 @@ CREATE TABLE
         PRIMARY KEY (id)
     )
     ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--    
+alter table weather_day add areaCode VARCHAR(40) DEFAULT '' after areaName;

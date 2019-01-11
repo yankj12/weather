@@ -28,8 +28,10 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yan.weather.mapper.WeatherCityMapper;
+import com.yan.weather.mapper.WeatherDayMapper;
 import com.yan.weather.mapper.WeatherMonthMapper;
 import com.yan.weather.schema.mysql.WeatherCity;
+import com.yan.weather.schema.mysql.WeatherDay;
 import com.yan.weather.schema.mysql.WeatherMonth;
 import com.yan.weather.service.facade.WeatherHistoryService;
 
@@ -52,6 +54,9 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 	
 	@Autowired
 	WeatherMonthMapper weatherMonthMapper;
+	
+	@Autowired
+	WeatherDayMapper weatherDayMapper;
 	
 	@Override
 	public void crawlWeatherCity() {
@@ -143,7 +148,6 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 	}
 
 	public void crawlWeatherMonthByAreaCode(String areaCode) {
-		// TODO Auto-generated method stub
 		// http://lishi.tianqi.com/beijing/index.html
 		String url = "http://lishi.tianqi.com/" + areaCode + "/index.html";
 		
@@ -213,9 +217,91 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 	}
 
 	@Override
-	public void crawlWeatherHistoryByMonth(WeatherMonth weatherMonth) {
-		// TODO Auto-generated method stub
+	public void crawlWeatherHistoryByMonth(String areaCode, String yearMonth) {
 		// http://lishi.tianqi.com/beijing/201810.html
+		
+		String url = "http://lishi.tianqi.com/" + areaCode + "/" + yearMonth + ".html";
+		
+		Map<String, String> requestHeaders = new HashMap<>();
+		
+		requestHeaders.put("Host", "lishi.tianqi.com");
+		requestHeaders.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0");
+		requestHeaders.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+		requestHeaders.put("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2");
+		requestHeaders.put("Accept-Encoding", "gzip, deflate");
+		requestHeaders.put("Connection", "keep-alive");
+		requestHeaders.put("Cookie", "cs_prov=04; cs_city=0401; ccity=101040100; Hm_lvt_ab6a683aa97a52202eab5b3a9042a8d2=1545100007,1547086544; UM_distinctid=168358b39e22db-0639973eb72783-143a7540-1fa400-168358b39e327f; CNZZDATA1275796416=1915182485-1547084074-%7C1547084074; Hm_lpvt_ab6a683aa97a52202eab5b3a9042a8d2=1547086573");
+		
+		String content = this.requestUrlByGetMethod(url, requestHeaders, "utf-8");
+		System.out.println(content);
+		
+		if(content != null) {
+			Document document=Jsoup.parse(content);
+			Element weatherAllDivElement = document.select("div.tqtongji2").first();
+			List<Element> weatherHisliElements = weatherAllDivElement.select("ul");
+			
+			if(weatherHisliElements != null){
+				for(Element ulelement:weatherHisliElements){
+					List<Element> liElements = ulelement.select("li");
+					
+					if(liElements != null && liElements.size() > 0){
+						if(liElements.get(0).ownText() == null || "日期".equals(liElements.get(0).ownText())){
+							// 说明是表头行
+							continue;
+						}else{
+							// 日期	 最高气温	最低气温	天气	风向	风力
+							WeatherDay weatherDay = new WeatherDay();
+							
+							weatherDay.setAreaCode(areaCode);
+							
+							//text​() Gets the combined text of this element and all its children. 
+							//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
+							String dateStr = liElements.get(0).text();
+							
+							weatherDay.setDate(dateStr);
+							
+							String[] ary = dateStr.split("-");
+							
+							weatherDay.setYear(ary[0]);
+							weatherDay.setMonth(ary[1]);
+							weatherDay.setDay(ary[2]);
+							
+							String temperatureMaxStr = liElements.get(1).ownText();
+							weatherDay.setTemperatureMax(Double.parseDouble(temperatureMaxStr));
+							
+							String temperatureMinStr = liElements.get(2).ownText();
+							weatherDay.setTemperatureMin(Double.parseDouble(temperatureMinStr));
+							
+							String weatherSummary = liElements.get(3).ownText();
+							weatherDay.setSummary(weatherSummary);
+							
+							String windDirection = liElements.get(4).ownText();
+							weatherDay.setWindDirection(windDirection);
+							
+							String windScale = liElements.get(5).ownText();
+							weatherDay.setWindScale(windScale);
+							
+							weatherDay.setValidStatus("1");
+							weatherDay.setInsertTime(new Date());
+							weatherDay.setUpdateTime(new Date());
+							
+							
+							Map<String, Object> condition = new HashMap<>();
+							condition.put("date", dateStr);
+							condition.put("areaCode", areaCode);
+							
+							Long resultCount = weatherDayMapper.countWeatherDaysByCondition(condition);
+							if(resultCount == 0) {
+								weatherDayMapper.insertWeatherDay(weatherDay);
+								logger.debug("保存城市天气信息," + areaCode + "," + dateStr);
+							}
+							
+						}
+					}
+							
+				}
+			}
+		}
 	}
 	
 	/**

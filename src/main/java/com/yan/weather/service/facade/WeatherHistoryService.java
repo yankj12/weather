@@ -1,7 +1,5 @@
 package com.yan.weather.service.facade;
 
-import com.yan.weather.schema.mysql.WeatherMonth;
-
 public interface WeatherHistoryService {
 
 	// 获取所有的城市列表
@@ -11,6 +9,6 @@ public interface WeatherHistoryService {
 	public void crawlWeatherMonthByAreaCode(String areaCode);
 	
 	// 按月获取历史天气
-	void crawlWeatherHistoryByMonth(WeatherMonth weatherMonth);
+	void crawlWeatherHistoryByMonth(String areaCode, String yearMonth);
 	
 }
