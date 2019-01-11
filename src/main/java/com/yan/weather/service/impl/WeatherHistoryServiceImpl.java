@@ -87,7 +87,7 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 			Element cityAllDivElement = document.select("div#cityall").first();
 			List<Element> cityliElements = cityAllDivElement.select("li");
 			
-			List<WeatherCity> weatherCities = new ArrayList<WeatherCity>();
+//			List<WeatherCity> weatherCities = new ArrayList<WeatherCity>();
 			
 			if(cityliElements != null){
 				for(Element lielement:cityliElements){
@@ -107,6 +107,8 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 							
 							weatherCity.setAreaName(areaName);
 							weatherCity.setAreaCode(areaCode);
+							// 首字母变大写作为索引字符
+							weatherCity.setIndexLetter(areaCode.substring(0, 1).toUpperCase());
 							weatherCity.setUrl(href);
 							
 							weatherCity.setCrawlCount(0);
@@ -280,7 +282,10 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 	public static void main(String[] args) {
 		WeatherHistoryServiceImpl weatherHistoryServiceImpl = new WeatherHistoryServiceImpl();
 //		weatherHistoryServiceImpl.crawlWeatherCity();
-		System.out.println(weatherHistoryServiceImpl.substrYearMonthFromUrl("http://lishi.tianqi.com/beijing/201812.html"));
+//		System.out.println(weatherHistoryServiceImpl.substrYearMonthFromUrl("http://lishi.tianqi.com/beijing/201812.html"));
+		
+		System.out.println("beijing".substring(0, 1).toUpperCase());
+		
 	}
 	
 	/**
