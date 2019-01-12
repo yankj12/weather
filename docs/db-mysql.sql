@@ -61,5 +61,8 @@ CREATE TABLE
     )
     ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---    
+--增加areacode字段
 alter table weather_day add areaCode VARCHAR(40) DEFAULT '' after areaName;
+
+--对没有indexletter的数据补充indexLetter
+update weather_city set indexLetter=upper(left(areaCode, 1));
