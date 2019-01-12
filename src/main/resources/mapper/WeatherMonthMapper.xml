@@ -23,6 +23,13 @@
         SELECT * FROM weather_month WHERE yearMonth = #{yearMonth} and areaName = #{areaName}
     </select>
     
+    <select id="findWeatherMonthsUnCrawledFirst" parameterType="int" resultType="com.yan.weather.schema.mysql.WeatherMonth">
+        select * from weather_month
+        where crawlFlag="0" 
+        order by yearMonth desc 
+        limit #{first}
+    </select>
+    
 	<select id="countWeatherMonthsByCondition" parameterType="String" resultType="long">
         SELECT count(*) FROM weather_month
         <trim prefix="where" prefixOverrides="and|or"> 
@@ -75,4 +82,10 @@
     	update weather_month set areaCode=#{areaCode}, urlName=#{urlName}, url=#{url}, crawlFlag=#{crawlFlag}, crawlCount=#{crawlCount}, validStatus=#{validStatus}, updateTime=#{updateTime}
     	where yearMonth = #{yearMonth} and areaName = #{areaName}
     </update>
+    
+    <update id="updateCrawlFlagByMonthAreaCodeAndYearMonth" parameterType="com.yan.weather.schema.mysql.WeatherMonth">
+    	update weather_month set crawlFlag=#{crawlFlag}, crawlCount=crawlCount+1, updateTime=#{updateTime}
+    	where yearMonth = #{yearMonth} and areaCode=#{areaCode}
+    </update>
+    
 </mapper>

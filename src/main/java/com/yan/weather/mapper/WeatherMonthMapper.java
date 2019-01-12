@@ -18,6 +18,8 @@ public interface WeatherMonthMapper {
 	// 查询某一月的天气
 	List<WeatherMonth> findWeatherMonthsByMonthArea(String month, String area);
 	
+	List<WeatherMonth>  findWeatherMonthsUnCrawledFirst(int first);
+	
 	List<WeatherMonth> findWeatherMonthsByCondition(Map<String, Object> condition);
 	
 	Long countWeatherMonthsByCondition(Map<String, Object> condition);
@@ -25,4 +27,6 @@ public interface WeatherMonthMapper {
 	void deleteWeatherMonthByMonthArea(String month, String areaName);
 	
 	void updateWeatherMonthByMonthArea(WeatherMonth weatherMonth);
+	
+	void updateCrawlFlagByMonthAreaCodeAndYearMonth(WeatherMonth weatherMonth);
 }
