@@ -47,7 +47,10 @@
   </logger>
   <logger name="com.yan.weather.service.impl.WeatherHistoryServiceImpl" additivity="false" level="DEBUG">
     <appender-ref ref="consolelog" />
-  </logger> 
+  </logger>
+  <logger name="com.yan.weather.schedule.ScheduledTasks" additivity="false" level="DEBUG">
+    <appender-ref ref="consolelog" />
+  </logger>
   
   <!-- 记录错误日志 -->
   <logger name="error" additivity="false" level="INFO">
