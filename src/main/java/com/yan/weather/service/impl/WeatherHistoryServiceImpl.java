@@ -153,72 +153,94 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 		WeatherCity city = weatherCityMapper.findWeatherCityByAreaCode(areaCode);
 		String areaName = city != null ? city.getAreaName() : "";
 		
-		// http://lishi.tianqi.com/beijing/index.html
-		String url = "http://lishi.tianqi.com/" + areaCode + "/index.html";
-		
-		Map<String, String> requestHeaders = new HashMap<>();
-		
-		requestHeaders.put("Host", "lishi.tianqi.com");
-		requestHeaders.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0");
-		requestHeaders.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		requestHeaders.put("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2");
-		requestHeaders.put("Accept-Encoding", "gzip, deflate");
-		requestHeaders.put("Connection", "keep-alive");
-		requestHeaders.put("Cookie", "cs_prov=04; cs_city=0401; ccity=101040100; Hm_lvt_ab6a683aa97a52202eab5b3a9042a8d2=1545100007,1547086544; UM_distinctid=168358b39e22db-0639973eb72783-143a7540-1fa400-168358b39e327f; CNZZDATA1275796416=1915182485-1547084074-%7C1547084074; Hm_lpvt_ab6a683aa97a52202eab5b3a9042a8d2=1547086573");
-		
-		String content = this.requestUrlByGetMethod(url, requestHeaders, "utf-8");
-//		System.out.println(content);
-		
-		if(content != null) {
-			Document document=Jsoup.parse(content);
-			Element cityAllDivElement = document.select("div.tqtongji1").first();
-			List<Element> cityMonthliElements = cityAllDivElement.select("li");
+		try {
+			// http://lishi.tianqi.com/beijing/index.html
+			String url = "http://lishi.tianqi.com/" + areaCode + "/index.html";
 			
-			if(cityMonthliElements != null){
-				for(Element lielement:cityMonthliElements){
-					Element aElement = lielement.select("a").first();
-					String href = aElement.attr("href");
-					
-					//text​() Gets the combined text of this element and all its children. 
-					//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
-					String urlName = aElement.ownText();
-					
-					if(href != null && !"".equals(href.trim())){
-						if(!href.startsWith("#")){
-							WeatherMonth weatherMonth = new WeatherMonth();
-							
-							// http://lishi.tianqi.com/anda/index.html
-							String yearMonth = this.substrYearMonthFromUrl(href);
-							
-							weatherMonth.setAreaCode(areaCode);
-							weatherMonth.setAreaName(areaName);
-							
-							weatherMonth.setYearMonth(yearMonth);
-							
-							weatherMonth.setUrl(href);
-							weatherMonth.setUrlName(urlName);
-							
-							weatherMonth.setCrawlCount(0);
-							weatherMonth.setCrawlFlag(WeatherCity.CRAWL_FLAG_INITIAL);
-							weatherMonth.setValidStatus("1");
-							
-							weatherMonth.setInsertTime(new Date());
-							weatherMonth.setUpdateTime(new Date());
-							
-							Map<String, Object> condition = new HashMap<>();
-							condition.put("yearMonth", yearMonth);
-							condition.put("areaCode", areaCode);
-							
-							Long resultCount = weatherMonthMapper.countWeatherMonthsByCondition(condition);
-							if(resultCount == 0) {
-								weatherMonthMapper.insertWeatherMonth(weatherMonth);
-								logger.debug("保存城市天气年月信息," + areaCode + "," + yearMonth);
+			Map<String, String> requestHeaders = new HashMap<>();
+			
+			requestHeaders.put("Host", "lishi.tianqi.com");
+			requestHeaders.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0");
+			requestHeaders.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+			requestHeaders.put("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2");
+			requestHeaders.put("Accept-Encoding", "gzip, deflate");
+			requestHeaders.put("Connection", "keep-alive");
+			requestHeaders.put("Cookie", "cs_prov=04; cs_city=0401; ccity=101040100; Hm_lvt_ab6a683aa97a52202eab5b3a9042a8d2=1545100007,1547086544; UM_distinctid=168358b39e22db-0639973eb72783-143a7540-1fa400-168358b39e327f; CNZZDATA1275796416=1915182485-1547084074-%7C1547084074; Hm_lpvt_ab6a683aa97a52202eab5b3a9042a8d2=1547086573");
+			
+			String content = this.requestUrlByGetMethod(url, requestHeaders, "utf-8");
+//		System.out.println(content);
+			
+			if(content != null) {
+				Document document=Jsoup.parse(content);
+				Element cityAllDivElement = document.select("div.tqtongji1").first();
+				List<Element> cityMonthliElements = cityAllDivElement.select("li");
+				
+				if(cityMonthliElements != null){
+					for(Element lielement:cityMonthliElements){
+						Element aElement = lielement.select("a").first();
+						String href = aElement.attr("href");
+						
+						//text​() Gets the combined text of this element and all its children. 
+						//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
+						String urlName = aElement.ownText();
+						
+						if(href != null && !"".equals(href.trim())){
+							if(!href.startsWith("#")){
+								WeatherMonth weatherMonth = new WeatherMonth();
+								
+								// http://lishi.tianqi.com/anda/index.html
+								String yearMonth = this.substrYearMonthFromUrl(href);
+								
+								weatherMonth.setAreaCode(areaCode);
+								weatherMonth.setAreaName(areaName);
+								
+								weatherMonth.setYearMonth(yearMonth);
+								
+								weatherMonth.setUrl(href);
+								weatherMonth.setUrlName(urlName);
+								
+								weatherMonth.setCrawlCount(0);
+								weatherMonth.setCrawlFlag(WeatherCity.CRAWL_FLAG_INITIAL);
+								weatherMonth.setValidStatus("1");
+								
+								weatherMonth.setInsertTime(new Date());
+								weatherMonth.setUpdateTime(new Date());
+								
+								Map<String, Object> condition = new HashMap<>();
+								condition.put("yearMonth", yearMonth);
+								condition.put("areaCode", areaCode);
+								
+								Long resultCount = weatherMonthMapper.countWeatherMonthsByCondition(condition);
+								if(resultCount == 0) {
+									weatherMonthMapper.insertWeatherMonth(weatherMonth);
+									logger.debug("保存城市天气年月信息," + areaCode + "," + yearMonth);
+								}
+								
 							}
-							
 						}
 					}
 				}
 			}
+			
+			// 更新下WeatherCity的crawlFlag标志位
+			// 更新为下载成功
+			WeatherCity cityTemp = new WeatherCity();
+			cityTemp.setAreaCode(areaCode);
+			cityTemp.setCrawlFlag(WeatherCity.CRAWL_FLAG_SUCCESS);
+			cityTemp.setUpdateTime(new Date());
+			
+			weatherCityMapper.updateCrawlFlagByAreaCode(cityTemp);
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			// 更新下WeatherCity的crawlFlag标志位
+			// 更新为下载失败
+			WeatherCity cityTemp = new WeatherCity();
+			cityTemp.setAreaCode(areaCode);
+			cityTemp.setCrawlFlag(WeatherCity.CRAWL_FLAG_FAIL);
+			cityTemp.setUpdateTime(new Date());
+			
+			weatherCityMapper.updateCrawlFlagByAreaCode(cityTemp);
 		}
 	}
 
@@ -324,7 +346,7 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 			monthTemp.setCrawlFlag(WeatherCity.CRAWL_FLAG_SUCCESS);
 			monthTemp.setUpdateTime(new Date());
 			
-			weatherMonthMapper.updateCrawlFlagByMonthAreaCodeAndYearMonth(monthTemp);
+			weatherMonthMapper.updateCrawlFlagByAreaCodeAndYearMonth(monthTemp);
 		} catch (Exception e) {
 			e.printStackTrace();
 			// 更新下WeatherMonth的crawlFlag标志位
@@ -336,7 +358,7 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 			monthTemp.setCrawlFlag(WeatherCity.CRAWL_FLAG_FAIL);
 			monthTemp.setUpdateTime(new Date());
 			
-			weatherMonthMapper.updateCrawlFlagByMonthAreaCodeAndYearMonth(monthTemp);
+			weatherMonthMapper.updateCrawlFlagByAreaCodeAndYearMonth(monthTemp);
 		}
 	}
 	

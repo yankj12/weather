@@ -18,8 +18,11 @@ public interface WeatherCityMapper {
 	
 	WeatherCity findWeatherCityByAreaName(String areaName);
 	
+	List<WeatherCity> findWeatherCitiesUnCrawledFirst(int first);
+	
 	List<WeatherCity> findWeatherCitysByCondition(Map<String, Object> condition);
 	
 	Long countWeatherCitysByCondition(Map<String, Object> condition);
 	
+	void updateCrawlFlagByAreaCode(WeatherCity weatherCity);
 }

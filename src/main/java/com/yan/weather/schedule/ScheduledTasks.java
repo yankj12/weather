@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.yan.weather.mapper.WeatherCityMapper;
 import com.yan.weather.mapper.WeatherMonthMapper;
+import com.yan.weather.schema.mysql.WeatherCity;
 import com.yan.weather.schema.mysql.WeatherMonth;
 import com.yan.weather.service.facade.WeatherHistoryService;
 
@@ -25,9 +27,37 @@ public class ScheduledTasks {
     WeatherMonthMapper weatherMonthMapper;
     
     @Autowired
+	WeatherCityMapper weatherCityMapper;
+    
+    @Autowired
 	WeatherHistoryService weatherHistoryService;
     
-    @Scheduled(initialDelay = 1000, fixedDelay = 30000)    //定时器将在1秒后每隔20秒执行
+    @Scheduled(initialDelay = 1000, fixedDelay = 20000)    //定时器将在1秒后每隔20秒执行
+    public void crawlWeatherMonthTask() {
+    	
+    	// 查出前10条未被爬取的数据
+    	List<WeatherCity> weatherCities = weatherCityMapper.findWeatherCitiesUnCrawledFirst(10);
+    	
+    	if(weatherCities != null && weatherCities.size() > 0) {
+    		logger.info("本次有" + weatherCities.size() + "条需要爬取的天气城市年月（WeatherCity）数据。");
+    		for(WeatherCity city:weatherCities) {
+    			String areaCode = city.getAreaCode();
+    			
+    			weatherHistoryService.crawlWeatherMonthByAreaCode(areaCode);
+    			logger.info("爬取的天气城市年月（WeatherCity）," + areaCode + "完成。");
+    			try {
+    				// 每条之间1秒间隔
+					Thread.sleep(1*1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}else {
+    		logger.info("没有需要爬取的天气城市年月（WeatherCity）数据。");
+    	}
+    }
+    
+    //@Scheduled(initialDelay = 20000, fixedDelay = 20000)    //定时器将在1秒后每隔30秒执行
     public void doTask() {
     	logger.debug("The time is now {}", dateFormat.format(new Date()));
     	

@@ -27,6 +27,13 @@
         SELECT * FROM weather_city WHERE areaName = #{areaName}
     </select>
     
+    <select id="findWeatherCitiesUnCrawledFirst" parameterType="int" resultType="com.yan.weather.schema.mysql.WeatherCity">
+        select * from weather_city
+        where crawlFlag="0" 
+        order by updateTime asc 
+        limit #{first}
+    </select>
+    
 	<select id="countWeatherCitysByCondition" parameterType="String" resultType="long">
         SELECT count(*) FROM weather_city
         <trim prefix="where" prefixOverrides="and|or"> 
@@ -47,7 +54,7 @@
     </select>
     
     <select id="findWeatherCitysByCondition" parameterType="java.util.Map"  resultType="com.yan.weather.schema.mysql.WeatherCity">
-    	select * from weather_month
+    	select * from weather_city
     	<trim prefix="where" prefixOverrides="and|or"> 
     		<if test="areaName != null and areaName != ''">
     			areaName=#{areaName}
@@ -66,4 +73,8 @@
     	limit #{offset},#{pageSize}
     </select>
     
+    <update id="updateCrawlFlagByAreaCode" parameterType="com.yan.weather.schema.mysql.WeatherCity">
+    	update weather_city set crawlFlag=#{crawlFlag}, crawlCount=crawlCount+1, updateTime=#{updateTime}
+    	where areaCode=#{areaCode}
+    </update>
 </mapper>

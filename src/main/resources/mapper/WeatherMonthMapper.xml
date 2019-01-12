@@ -83,7 +83,7 @@
     	where yearMonth = #{yearMonth} and areaName = #{areaName}
     </update>
     
-    <update id="updateCrawlFlagByMonthAreaCodeAndYearMonth" parameterType="com.yan.weather.schema.mysql.WeatherMonth">
+    <update id="updateCrawlFlagByAreaCodeAndYearMonth" parameterType="com.yan.weather.schema.mysql.WeatherMonth">
     	update weather_month set crawlFlag=#{crawlFlag}, crawlCount=crawlCount+1, updateTime=#{updateTime}
     	where yearMonth = #{yearMonth} and areaCode=#{areaCode}
     </update>

@@ -28,5 +28,5 @@ public interface WeatherMonthMapper {
 	
 	void updateWeatherMonthByMonthArea(WeatherMonth weatherMonth);
 	
-	void updateCrawlFlagByMonthAreaCodeAndYearMonth(WeatherMonth weatherMonth);
+	void updateCrawlFlagByAreaCodeAndYearMonth(WeatherMonth weatherMonth);
 }
