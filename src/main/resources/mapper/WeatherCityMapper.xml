@@ -19,6 +19,10 @@
         </foreach>
     </insert>
     
+    <select id="findWeatherCityByAreaCode" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherCity">
+        SELECT * FROM weather_city WHERE areaCode = #{areaCode}
+    </select>
+    
     <select id="findWeatherCityByAreaName" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherCity">
         SELECT * FROM weather_city WHERE areaName = #{areaName}
     </select>

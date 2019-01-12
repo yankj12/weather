@@ -148,6 +148,11 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 	}
 
 	public void crawlWeatherMonthByAreaCode(String areaCode) {
+		
+		// 根据areaCode查出来areaName，当然这一步是非必须的
+		WeatherCity city = weatherCityMapper.findWeatherCityByAreaCode(areaCode);
+		String areaName = city != null ? city.getAreaName() : "";
+		
 		// http://lishi.tianqi.com/beijing/index.html
 		String url = "http://lishi.tianqi.com/" + areaCode + "/index.html";
 		
@@ -186,6 +191,7 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 							String yearMonth = this.substrYearMonthFromUrl(href);
 							
 							weatherMonth.setAreaCode(areaCode);
+							weatherMonth.setAreaName(areaName);
 							
 							weatherMonth.setYearMonth(yearMonth);
 							
@@ -218,6 +224,11 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 
 	@Override
 	public void crawlWeatherHistoryByMonth(String areaCode, String yearMonth) {
+		
+		// 根据areaCode查出来areaName，当然这一步是非必须的
+		WeatherCity city = weatherCityMapper.findWeatherCityByAreaCode(areaCode);
+		String areaName = city != null ? city.getAreaName() : "";
+		
 		// http://lishi.tianqi.com/beijing/201810.html
 		
 		String url = "http://lishi.tianqi.com/" + areaCode + "/" + yearMonth + ".html";
@@ -253,6 +264,7 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 							WeatherDay weatherDay = new WeatherDay();
 							
 							weatherDay.setAreaCode(areaCode);
+							weatherDay.setAreaName(areaName);
 							
 							//text​() Gets the combined text of this element and all its children. 
 							//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 

@@ -14,6 +14,8 @@ public interface WeatherCityMapper {
 	
 	void insertBatchWeatherCity(List<WeatherCity> weatherCitys);
 	
+	WeatherCity findWeatherCityByAreaCode(String areaCode);
+	
 	WeatherCity findWeatherCityByAreaName(String areaName);
 	
 	List<WeatherCity> findWeatherCitysByCondition(Map<String, Object> condition);
