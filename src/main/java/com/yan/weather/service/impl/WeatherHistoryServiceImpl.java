@@ -168,55 +168,52 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 			requestHeaders.put("Cookie", "cs_prov=04; cs_city=0401; ccity=101040100; Hm_lvt_ab6a683aa97a52202eab5b3a9042a8d2=1545100007,1547086544; UM_distinctid=168358b39e22db-0639973eb72783-143a7540-1fa400-168358b39e327f; CNZZDATA1275796416=1915182485-1547084074-%7C1547084074; Hm_lpvt_ab6a683aa97a52202eab5b3a9042a8d2=1547086573");
 			
 			String content = this.requestUrlByGetMethod(url, requestHeaders, "utf-8");
-//		System.out.println(content);
 			
-			if(content != null) {
-				Document document=Jsoup.parse(content);
-				Element cityAllDivElement = document.select("div.tqtongji1").first();
-				List<Element> cityMonthliElements = cityAllDivElement.select("li");
-				
-				if(cityMonthliElements != null){
-					for(Element lielement:cityMonthliElements){
-						Element aElement = lielement.select("a").first();
-						String href = aElement.attr("href");
-						
-						//text​() Gets the combined text of this element and all its children. 
-						//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
-						String urlName = aElement.ownText();
-						
-						if(href != null && !"".equals(href.trim())){
-							if(!href.startsWith("#")){
-								WeatherMonth weatherMonth = new WeatherMonth();
-								
-								// http://lishi.tianqi.com/anda/index.html
-								String yearMonth = this.substrYearMonthFromUrl(href);
-								
-								weatherMonth.setAreaCode(areaCode);
-								weatherMonth.setAreaName(areaName);
-								
-								weatherMonth.setYearMonth(yearMonth);
-								
-								weatherMonth.setUrl(href);
-								weatherMonth.setUrlName(urlName);
-								
-								weatherMonth.setCrawlCount(0);
-								weatherMonth.setCrawlFlag(WeatherCity.CRAWL_FLAG_INITIAL);
-								weatherMonth.setValidStatus("1");
-								
-								weatherMonth.setInsertTime(new Date());
-								weatherMonth.setUpdateTime(new Date());
-								
-								Map<String, Object> condition = new HashMap<>();
-								condition.put("yearMonth", yearMonth);
-								condition.put("areaCode", areaCode);
-								
-								Long resultCount = weatherMonthMapper.countWeatherMonthsByCondition(condition);
-								if(resultCount == 0) {
-									weatherMonthMapper.insertWeatherMonth(weatherMonth);
-									logger.debug("保存城市天气年月信息," + areaCode + "," + yearMonth);
-								}
-								
+			Document document=Jsoup.parse(content);
+			Element cityAllDivElement = document.select("div.tqtongji1").first();
+			List<Element> cityMonthliElements = cityAllDivElement.select("li");
+			
+			if(cityMonthliElements != null){
+				for(Element lielement:cityMonthliElements){
+					Element aElement = lielement.select("a").first();
+					String href = aElement.attr("href");
+					
+					//text​() Gets the combined text of this element and all its children. 
+					//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
+					String urlName = aElement.ownText();
+					
+					if(href != null && !"".equals(href.trim())){
+						if(!href.startsWith("#")){
+							WeatherMonth weatherMonth = new WeatherMonth();
+							
+							// http://lishi.tianqi.com/anda/index.html
+							String yearMonth = this.substrYearMonthFromUrl(href);
+							
+							weatherMonth.setAreaCode(areaCode);
+							weatherMonth.setAreaName(areaName);
+							
+							weatherMonth.setYearMonth(yearMonth);
+							
+							weatherMonth.setUrl(href);
+							weatherMonth.setUrlName(urlName);
+							
+							weatherMonth.setCrawlCount(0);
+							weatherMonth.setCrawlFlag(WeatherCity.CRAWL_FLAG_INITIAL);
+							weatherMonth.setValidStatus("1");
+							
+							weatherMonth.setInsertTime(new Date());
+							weatherMonth.setUpdateTime(new Date());
+							
+							Map<String, Object> condition = new HashMap<>();
+							condition.put("yearMonth", yearMonth);
+							condition.put("areaCode", areaCode);
+							
+							Long resultCount = weatherMonthMapper.countWeatherMonthsByCondition(condition);
+							if(resultCount == 0) {
+								weatherMonthMapper.insertWeatherMonth(weatherMonth);
+								logger.debug("保存城市天气年月信息," + areaCode + "," + yearMonth);
 							}
+							
 						}
 					}
 				}
@@ -267,74 +264,71 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 			requestHeaders.put("Cookie", "cs_prov=04; cs_city=0401; ccity=101040100; Hm_lvt_ab6a683aa97a52202eab5b3a9042a8d2=1545100007,1547086544; UM_distinctid=168358b39e22db-0639973eb72783-143a7540-1fa400-168358b39e327f; CNZZDATA1275796416=1915182485-1547084074-%7C1547084074; Hm_lpvt_ab6a683aa97a52202eab5b3a9042a8d2=1547086573");
 			
 			String content = this.requestUrlByGetMethod(url, requestHeaders, "utf-8");
-//			System.out.println(content);
 			
-			if(content != null) {
-				Document document=Jsoup.parse(content);
-				Element weatherAllDivElement = document.select("div.tqtongji2").first();
-				List<Element> weatherHisliElements = weatherAllDivElement.select("ul");
-				
-				if(weatherHisliElements != null){
-					for(Element ulelement:weatherHisliElements){
-						List<Element> liElements = ulelement.select("li");
-						
-						if(liElements != null && liElements.size() > 0){
-							if(liElements.get(0).ownText() == null || "日期".equals(liElements.get(0).ownText())){
-								// 说明是表头行
-								continue;
-							}else{
-								// 日期	 最高气温	最低气温	天气	风向	风力
-								WeatherDay weatherDay = new WeatherDay();
-								
-								weatherDay.setAreaCode(areaCode);
-								weatherDay.setAreaName(areaName);
-								
-								//text​() Gets the combined text of this element and all its children. 
-								//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
-								String dateStr = liElements.get(0).text();
-								
-								weatherDay.setDate(dateStr);
-								
-								String[] ary = dateStr.split("-");
-								
-								weatherDay.setYear(ary[0]);
-								weatherDay.setMonth(ary[1]);
-								weatherDay.setDay(ary[2]);
-								
-								String temperatureMaxStr = liElements.get(1).ownText();
-								weatherDay.setTemperatureMax(Double.parseDouble(temperatureMaxStr));
-								
-								String temperatureMinStr = liElements.get(2).ownText();
-								weatherDay.setTemperatureMin(Double.parseDouble(temperatureMinStr));
-								
-								String weatherSummary = liElements.get(3).ownText();
-								weatherDay.setSummary(weatherSummary);
-								
-								String windDirection = liElements.get(4).ownText();
-								weatherDay.setWindDirection(windDirection);
-								
-								String windScale = liElements.get(5).ownText();
-								weatherDay.setWindScale(windScale);
-								
-								weatherDay.setValidStatus("1");
-								weatherDay.setInsertTime(new Date());
-								weatherDay.setUpdateTime(new Date());
-								
-								
-								Map<String, Object> condition = new HashMap<>();
-								condition.put("date", dateStr);
-								condition.put("areaCode", areaCode);
-								
-								Long resultCount = weatherDayMapper.countWeatherDaysByCondition(condition);
-								if(resultCount == 0) {
-									weatherDayMapper.insertWeatherDay(weatherDay);
-									logger.debug("保存城市天气信息," + areaCode + "," + dateStr);
-								}
-								
+			Document document=Jsoup.parse(content);
+			Element weatherAllDivElement = document.select("div.tqtongji2").first();
+			List<Element> weatherHisliElements = weatherAllDivElement.select("ul");
+			
+			if(weatherHisliElements != null){
+				for(Element ulelement:weatherHisliElements){
+					List<Element> liElements = ulelement.select("li");
+					
+					if(liElements != null && liElements.size() > 0){
+						if(liElements.get(0).ownText() == null || "日期".equals(liElements.get(0).ownText())){
+							// 说明是表头行
+							continue;
+						}else{
+							// 日期	 最高气温	最低气温	天气	风向	风力
+							WeatherDay weatherDay = new WeatherDay();
+							
+							weatherDay.setAreaCode(areaCode);
+							weatherDay.setAreaName(areaName);
+							
+							//text​() Gets the combined text of this element and all its children. 
+							//ownText​() Gets the text owned by this element only; does not get the combined text of all children. 
+							String dateStr = liElements.get(0).text();
+							
+							weatherDay.setDate(dateStr);
+							
+							String[] ary = dateStr.split("-");
+							
+							weatherDay.setYear(ary[0]);
+							weatherDay.setMonth(ary[1]);
+							weatherDay.setDay(ary[2]);
+							
+							String temperatureMaxStr = liElements.get(1).ownText();
+							weatherDay.setTemperatureMax(Double.parseDouble(temperatureMaxStr));
+							
+							String temperatureMinStr = liElements.get(2).ownText();
+							weatherDay.setTemperatureMin(Double.parseDouble(temperatureMinStr));
+							
+							String weatherSummary = liElements.get(3).ownText();
+							weatherDay.setSummary(weatherSummary);
+							
+							String windDirection = liElements.get(4).ownText();
+							weatherDay.setWindDirection(windDirection);
+							
+							String windScale = liElements.get(5).ownText();
+							weatherDay.setWindScale(windScale);
+							
+							weatherDay.setValidStatus("1");
+							weatherDay.setInsertTime(new Date());
+							weatherDay.setUpdateTime(new Date());
+							
+							
+							Map<String, Object> condition = new HashMap<>();
+							condition.put("date", dateStr);
+							condition.put("areaCode", areaCode);
+							
+							Long resultCount = weatherDayMapper.countWeatherDaysByCondition(condition);
+							if(resultCount == 0) {
+								weatherDayMapper.insertWeatherDay(weatherDay);
+								logger.debug("保存城市天气信息," + areaCode + "," + dateStr);
 							}
+							
 						}
-								
 					}
+							
 				}
 			}
 			
