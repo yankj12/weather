@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 指定dao -->
+<mapper namespace="com.yan.weather.mapper.WeatherConfigMapper">
+
+	<insert id="insertWeatherConfig" parameterType="com.yan.weather.schema.mysql.WeatherConfig">
+    	insert into weather_config 
+    	(configCode, configName, configValue, description, validStatus, insertTime, updateTime) 
+    	values 
+    	(#{configCode},  #{configName},  #{configValue},  #{description},  #{validStatus},  #{insertTime},  #{updateTime})
+    </insert>
+        
+    <select id="findWeatherConfigByConfigCode" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherConfig">
+        SELECT * FROM weather_config WHERE configCode = #{configCode}
+    </select>
+    
+    <update id="updateValidStatusByConfigCode" parameterType="com.yan.weather.schema.mysql.WeatherConfig">
+    	update weather_config set validStatus=#{validStatus}, updateTime=#{updateTime}
+    	where configCode = #{configCode}
+    </update>
+    
+    <update id="updateConfigValueByConfigCode" parameterType="com.yan.weather.schema.mysql.WeatherConfig">
+    	update weather_config set configValue=#{configValue}, updateTime=#{updateTime}
+    	where configCode = #{configCode}
+    </update>
+    
+</mapper>
