@@ -58,7 +58,7 @@ public class ScheduledTasks {
     }
     
     //@Scheduled(initialDelay = 20000, fixedDelay = 20000)    //定时器将在1秒后每隔30秒执行
-    public void doTask() {
+    public void crawlWeatherDayTask() {
     	logger.debug("The time is now {}", dateFormat.format(new Date()));
     	
     	// 查出前10条未被爬取的数据
@@ -72,6 +72,12 @@ public class ScheduledTasks {
     			
     			weatherHistoryService.crawlWeatherHistoryByMonth(areaCode, yearMonth);
     			logger.info("爬取的天气城市年月（WeatherMonth）," + areaCode + "," + yearMonth + "完成。");
+    			try {
+    				// 每条之间1秒间隔
+					Thread.sleep(1*1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
     		}
     	}else {
     		logger.info("没有需要爬取的天气城市年月（WeatherMonth）数据。");

@@ -80,3 +80,23 @@ CREATE INDEX idx_weather_month_yearmonth ON weather_month (yearmonth);
 CREATE INDEX idx_weather_day_areacode ON weather_day (areacode);
 CREATE INDEX idx_weather_day_date ON weather_day (date);
 
+
+-- 创建weather_config表
+CREATE TABLE
+    weather_config
+    (
+        id INT NOT NULL AUTO_INCREMENT,
+        configCode VARCHAR(40) DEFAULT '',
+		configName VARCHAR(60) DEFAULT '',
+		configValue VARCHAR(10) DEFAULT '',
+		description VARCHAR(255) DEFAULT '',
+		validStatus VARCHAR(2) DEFAULT '',
+        insertTime DATETIME,
+        updateTime DATETIME,
+        PRIMARY KEY (id)
+    )
+    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE INDEX idx_weather_config_configcode ON weather_config (configCode);
+
+--alter table weather_config add configValue VARCHAR(10) DEFAULT '' after configName;
