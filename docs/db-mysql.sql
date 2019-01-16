@@ -100,3 +100,7 @@ CREATE TABLE
 CREATE INDEX idx_weather_config_configcode ON weather_config (configCode);
 
 --alter table weather_config add configValue VARCHAR(10) DEFAULT '' after configName;
+
+INSERT INTO weather_config (configCode, configName, configValue, description, validStatus, insertTime, updateTime) VALUES ('SCHEDUL_WEATHER_DAY_CONFIG', 'weatherDay的定时任务开关', '1', '1表示开启，0表示关闭', '1', '2019-01-16 14:37:00', '2019-01-16 14:37:00');
+INSERT INTO weather_config (configCode, configName, configValue, description, validStatus, insertTime, updateTime) VALUES ('SCHEDUL_WEATHER_MONTH_CONFIG', 'weatherMonth的定时任务开关', '1', '1表示开启，0表示关闭', '1', '2019-01-16 14:37:00', '2019-01-16 14:37:00');
+
