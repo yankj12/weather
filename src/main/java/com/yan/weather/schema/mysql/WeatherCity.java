@@ -6,7 +6,11 @@ import java.util.Date;
 public class WeatherCity implements Serializable{
 
 	public static final String CRAWL_FLAG_INITIAL = "0";
+	
+	public static final String CRAWL_FLAG_PREPARED = "P";
+	
 	public static final String CRAWL_FLAG_SUCCESS = "1";
+	
 	public static final String CRAWL_FLAG_FAIL = "2";
 	
 	

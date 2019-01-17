@@ -87,5 +87,13 @@
     	update weather_month set crawlFlag=#{crawlFlag}, crawlCount=crawlCount+1, updateTime=#{updateTime}
     	where yearMonth = #{yearMonth} and areaCode=#{areaCode}
     </update>
-    
+
+    <update id="updateCrawlFlagToPreparedByIds" parameterType="java.util.List">
+    	update weather_month set crawlFlag="P"
+    	where id in
+		<foreach item="item" index="index" collection="list"
+		    open="(" separator="," close=")">
+		      #{item}
+		</foreach>
+    </update>    
 </mapper>

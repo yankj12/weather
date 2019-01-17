@@ -1,6 +1,8 @@
 package com.yan.weather.schedule;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -96,8 +98,19 @@ public class ScheduledTasks {
     		
     		if(weatherMonths != null && weatherMonths.size() > 0) {
     			logger.info("There are " + weatherMonths.size() + " weather history(WeatherMonth)datas to crawl int this trun.");
+    			
+    			// 将这些未爬取的数据更新crawlFlag为准备状态
+        		List<Long> ids = new ArrayList<Long>();
     			for(WeatherMonth month:weatherMonths) {
-    				
+    				if(month.getId() != null){
+    					
+    				}
+    				ids.add(month.getId());
+    			}
+    			logger.info("update these WeatherMonth crawlFlag to 'P'(P means Prepared)." + Arrays.toString(ids.toArray()));
+    			weatherMonthMapper.updateCrawlFlagToPreparedByIds(ids);
+    			
+    			for(WeatherMonth month:weatherMonths) {
     				// 将weatherMonth添加到disruptor的队列中
     				weatherMonthEventConfig.getProducer().onData(month);
     			}

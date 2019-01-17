@@ -136,6 +136,8 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 //								e.printStackTrace();
 //							}
 								logger.debug("save WeatherCity," + areaName);
+							}else{
+								logger.debug("save WeatherCity," + areaName + ", already exists.");
 							}
 							
 							//weatherCities.add(weatherCity);
@@ -212,6 +214,8 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 							if(resultCount == 0) {
 								weatherMonthMapper.insertWeatherMonth(weatherMonth);
 								logger.debug("save WeatherMonth," + areaCode + "," + yearMonth);
+							}else{
+								logger.debug("save WeatherMonth," + areaCode + "," + yearMonth + ", already exists.");
 							}
 							
 						}
@@ -324,6 +328,8 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 							if(resultCount == 0) {
 								weatherDayMapper.insertWeatherDay(weatherDay);
 								logger.debug("insert WeatherDay," + areaCode + "," + dateStr);
+							}else{
+								logger.debug("insert WeatherDay," + areaCode + "," + dateStr + ", already exists.");
 							}
 							
 						}
