@@ -16,7 +16,7 @@ public interface WeatherMonthMapper {
 	void insertBatchWeatherMonth(List<WeatherMonth> weatherMonths);
 	
 	// 查询某一月的天气
-	List<WeatherMonth> findWeatherMonthsByMonthArea(String month, String area);
+	List<WeatherMonth> findWeatherMonthsByAreaCodeAndYearMonth(WeatherMonth weatherMonth);
 	
 	List<WeatherMonth>  findWeatherMonthsUnCrawledFirst(int first);
 	
@@ -24,9 +24,9 @@ public interface WeatherMonthMapper {
 	
 	Long countWeatherMonthsByCondition(Map<String, Object> condition);
 	
-	void deleteWeatherMonthByMonthArea(String month, String areaName);
+	void deleteWeatherMonthByAreaCodeAndYearMonth(Map<String, Object> condition);
 	
-	void updateWeatherMonthByMonthArea(WeatherMonth weatherMonth);
+	void updateWeatherMonthByAreaCodeAndYearMonth(WeatherMonth weatherMonth);
 	
 	void updateCrawlFlagByAreaCodeAndYearMonth(WeatherMonth weatherMonth);
 	

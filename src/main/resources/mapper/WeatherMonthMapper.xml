@@ -19,8 +19,8 @@
         </foreach>
     </insert>
     
-    <select id="findWeatherMonthsByMonthArea" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherMonth">
-        SELECT * FROM weather_month WHERE yearMonth = #{yearMonth} and areaName = #{areaName}
+    <select id="findWeatherMonthsByAreaCodeAndYearMonth" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherMonth">
+        SELECT * FROM weather_month WHERE areaCode = #{areaCode} and yearMonth = #{yearMonth}
     </select>
     
     <select id="findWeatherMonthsUnCrawledFirst" parameterType="int" resultType="com.yan.weather.schema.mysql.WeatherMonth">
@@ -74,18 +74,18 @@
     	limit #{offset},#{pageSize}
     </select>
     
-    <delete id="deleteWeatherMonthByMonthArea" parameterType="java.util.Map">
-    	delete from weather_month where yearMonth = #{yearMonth} and areaName = #{areaName}
+    <delete id="deleteWeatherMonthByAreaCodeAndYearMonth" parameterType="java.util.Map">
+    	delete from weather_month where areaCode = #{areaCode} and yearMonth = #{yearMonth}
     </delete>
     
-    <update id="updateWeatherMonthByMonthArea" parameterType="com.yan.weather.schema.mysql.WeatherMonth">
+    <update id="updateWeatherMonthByAreaCodeAndYearMonth" parameterType="com.yan.weather.schema.mysql.WeatherMonth">
     	update weather_month set areaCode=#{areaCode}, urlName=#{urlName}, url=#{url}, crawlFlag=#{crawlFlag}, crawlCount=#{crawlCount}, validStatus=#{validStatus}, updateTime=#{updateTime}
-    	where yearMonth = #{yearMonth} and areaName = #{areaName}
+    	where areaCode = #{areaCode} and yearMonth = #{yearMonth} 
     </update>
     
     <update id="updateCrawlFlagByAreaCodeAndYearMonth" parameterType="com.yan.weather.schema.mysql.WeatherMonth">
     	update weather_month set crawlFlag=#{crawlFlag}, crawlCount=crawlCount+1, updateTime=#{updateTime}
-    	where yearMonth = #{yearMonth} and areaCode=#{areaCode}
+    	where areaCode=#{areaCode} and yearMonth = #{yearMonth} 
     </update>
 
     <update id="updateCrawlFlagToPreparedByIds" parameterType="java.util.List">
