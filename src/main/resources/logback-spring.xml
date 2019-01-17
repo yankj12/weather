@@ -51,6 +51,32 @@
   <logger name="com.yan.weather.schedule.ScheduledTasks" additivity="false" level="DEBUG">
     <appender-ref ref="consolelog" />
   </logger>
+
+  <logger name="weatherHisLogger" additivity="false" level="DEBUG">
+    <appender-ref ref="consolelog" />
+  </logger>
+
+
+  <appender name="disruptorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+     <!-- 保存日志文件的路径 -->
+    <file>logs/disruptorLog.log</file>
+    <!-- 日志格式 -->
+    <encoder>
+        <pattern>[%d{yyyy-MM-dd HH:mm:ss}] [%thread] [%level] [%logger] - %m%n</pattern>
+    </encoder>
+    <!-- 循环政策：基于时间创建日志文件 -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- 日志文件名格式 -->
+      <fileNamePattern>disruptorLog.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <!-- 最大保存时间：30天-->
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+  </appender>
+
+  <!-- disruptor相关的日志，生产环境设置为INFO级别，DEBUG会将快速平台返回的内容给输出，会让日志很大 -->
+  <logger name="disruptorLog" additivity="false" level="DEBUG">
+    <appender-ref ref="disruptorLog" />
+  </logger>
   
   <!-- 记录错误日志 -->
   <logger name="error" additivity="false" level="INFO">

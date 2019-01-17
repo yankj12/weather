@@ -131,11 +131,11 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 //					        String jsonString = null;
 //							try {
 //								jsonString = mapper.writeValueAsString(weatherCity);
-//								logger.debug("保存城市信息," + jsonString);
+//								logger.debug("save WeatherCity," + jsonString);
 //							} catch (JsonProcessingException e) {
 //								e.printStackTrace();
 //							}
-								logger.debug("保存城市信息," + areaName);
+								logger.debug("save WeatherCity," + areaName);
 							}
 							
 							//weatherCities.add(weatherCity);
@@ -211,7 +211,7 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 							Long resultCount = weatherMonthMapper.countWeatherMonthsByCondition(condition);
 							if(resultCount == 0) {
 								weatherMonthMapper.insertWeatherMonth(weatherMonth);
-								logger.debug("保存城市天气年月信息," + areaCode + "," + yearMonth);
+								logger.debug("save WeatherMonth," + areaCode + "," + yearMonth);
 							}
 							
 						}
@@ -323,7 +323,7 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 							Long resultCount = weatherDayMapper.countWeatherDaysByCondition(condition);
 							if(resultCount == 0) {
 								weatherDayMapper.insertWeatherDay(weatherDay);
-								logger.debug("保存城市天气信息," + areaCode + "," + dateStr);
+								logger.debug("insert WeatherDay," + areaCode + "," + dateStr);
 							}
 							
 						}
@@ -342,7 +342,8 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 			
 			weatherMonthMapper.updateCrawlFlagByAreaCodeAndYearMonth(monthTemp);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("{'areaCode': '" + areaCode + "', 'yearMonth': '" + yearMonth + "'}", e);
+			//e.printStackTrace();
 			// 更新下WeatherMonth的crawlFlag标志位
 			// 更新为下载失败
 			

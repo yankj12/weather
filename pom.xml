@@ -82,6 +82,12 @@
 	    <artifactId>mysql-connector-java</artifactId>
 	    <version>8.0.11</version>
 	</dependency>
+    <!-- disruptor依赖jar包 -->
+	<dependency>
+		<groupId>com.lmax</groupId>
+		<artifactId>disruptor</artifactId>
+		<version>3.4.2</version>
+	</dependency>
   </dependencies>
 
   	<!-- spring boot的maven插件：可执行jar/war包支持 -->
