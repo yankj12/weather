@@ -94,7 +94,7 @@ public class ScheduledTasks {
     	if(weatherConfig.getConfigValue() != null && "1".equals(weatherConfig.getConfigValue().trim())){
     		
     		// 查出前10条未被爬取的数据
-    		List<WeatherMonth> weatherMonths = weatherMonthMapper.findWeatherMonthsUnCrawledFirst(10);
+    		List<WeatherMonth> weatherMonths = weatherMonthMapper.findWeatherMonthsUnCrawledFirst(40);
     		
     		if(weatherMonths != null && weatherMonths.size() > 0) {
     			logger.info("There are " + weatherMonths.size() + " weather history(WeatherMonth)datas to crawl int this trun.");
