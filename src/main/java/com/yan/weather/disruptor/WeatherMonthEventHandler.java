@@ -53,7 +53,7 @@ public class WeatherMonthEventHandler implements EventHandler<WeatherMonthEvent>
 			String yearMonth = month.getYearMonth();
 			
 			weatherHistoryService.crawlWeatherHistoryByMonth(areaCode, yearMonth);
-			weatherHisLogger.info("handler[" + handlerId + "] crawl weather history（WeatherMonth）," + areaCode + "," + yearMonth + " finished.");
+			weatherHisLogger.info("handler[" + handlerId + "] crawl weather history(WeatherMonth)," + areaCode + "," + yearMonth + " finished.");
 			try {
 				// 每条之间1秒间隔
 				Thread.sleep(1*1000);
