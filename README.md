@@ -4,6 +4,55 @@
 
 历史天气数据主要来自于[北京2017年12月份天气](http://lishi.tianqi.com/beijing/201712.html)
 
+## 使用说明
+
+使用SpringBoot开发，通过定时任务每隔一定时间获取天气历史数据。
+
+### 运行环境
+
+|名称|版本要求|说明|
+|---|---|---|
+|Java|jdk1.8及以上||
+|maven|无||
+
+### 安装
+
+使用maven打成可执行jar包
+
+```Java
+// 使用maven清理工作空间
+mvn clean
+
+// 使用maven打包
+mvn package
+```
+
+配置好基础数据
+
+1. 参考[数据结构](./docs/db-mysql.sql)创建好表结构
+2. 参考[数据结构](./docs/db-mysql.sql)配置好基础数据
+
+### 启动
+
+```Java
+java -jar weather-${version}.jar
+```
+
+### 开始获取数据
+
+weather_config表中SCHEDUL_WEATHER_DAY_CONFIG和SCHEDUL_WEATHER_MONTH_CONFIG为1，会分别获取对应的数据
+
+### 停止获取数据
+
+weather_config表中SCHEDUL_WEATHER_DAY_CONFIG和SCHEDUL_WEATHER_MONTH_CONFIG修改为0，则会停止获取对应数据。但java程序不会停止运行，停止java程序可使用kill或其他命令
+
+### 相关开关
+
+|开关代码|开关名称|说明|
+|---|---|---|
+|SCHEDUL_WEATHER_DAY_CONFIG|weatherDay的定时任务开关|1表示开启，0表示关闭|
+|SCHEDUL_WEATHER_MONTH_CONFIG|weatherMonth的定时任务开关|1表示开启，0表示关闭|
+
 ## 常见问题
 
 org.springframework.dao.DeadlockLoserDataAccessException
