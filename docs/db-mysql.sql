@@ -6,6 +6,7 @@ CREATE TABLE
         id BIGINT NOT NULL AUTO_INCREMENT,
         areaName VARCHAR(40),
         areaCode VARCHAR(40),
+        yearMonth VARCHAR(8),
 		date VARCHAR(12),
 		year VARCHAR(6),
 		month VARCHAR(2),
@@ -64,10 +65,14 @@ CREATE TABLE
 --增加areacode字段
 alter table weather_day add areaCode VARCHAR(40) DEFAULT '' after areaName;
 
+--增加yearMonth字段
+alter table weather_day add yearMonth VARCHAR(8) DEFAULT '' after areaCode;
+
 --对没有indexletter的数据补充indexLetter
 update weather_city set indexLetter=upper(left(areaCode, 1));
 
-
+--对没有yearMonth的weather_day数据补充yearMonth
+update weather_day set yearMonth=CONCAT(year,month);
 
 
 -- 创建索引
@@ -79,6 +84,7 @@ CREATE INDEX idx_weather_month_yearmonth ON weather_month (yearmonth);
 
 CREATE INDEX idx_weather_day_areacode ON weather_day (areacode);
 CREATE INDEX idx_weather_day_date ON weather_day (date);
+CREATE INDEX idx_weather_day_yearmonth ON weather_day (yearmonth);
 
 
 -- 创建weather_config表
