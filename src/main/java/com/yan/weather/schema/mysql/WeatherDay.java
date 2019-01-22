@@ -14,6 +14,9 @@ public class WeatherDay implements Serializable{
 
 	private String areaCode;
 
+	// 月，格式yyyyMM
+	private String yearMonth;
+	
     // 日期 yyyy-MM-dd
 	private String date;
 	
@@ -186,6 +189,14 @@ public class WeatherDay implements Serializable{
 
 	public void setAreaCode(String areaCode) {
 		this.areaCode = areaCode;
+	}
+
+	public String getYearMonth() {
+		return yearMonth;
+	}
+
+	public void setYearMonth(String yearMonth) {
+		this.yearMonth = yearMonth;
 	}
     
 }

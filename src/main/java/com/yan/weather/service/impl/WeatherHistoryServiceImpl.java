@@ -296,6 +296,8 @@ public class WeatherHistoryServiceImpl implements WeatherHistoryService{
 							
 							String[] ary = dateStr.split("-");
 							
+							weatherDay.setYearMonth(yearMonth);
+							
 							weatherDay.setYear(ary[0]);
 							weatherDay.setMonth(ary[1]);
 							weatherDay.setDay(ary[2]);

@@ -5,31 +5,31 @@
 
 	<insert id="insertWeatherDay" parameterType="com.yan.weather.schema.mysql.WeatherDay">
     	insert into weather_day 
-    	(areaName, areaCode, date, year, month, day, temperatureMax, temperatureMin, summary, windDirection, windScale, remark, validStatus, insertTime, updateTime) 
+    	(areaName, areaCode, yearMonth, date, year, month, day, temperatureMax, temperatureMin, summary, windDirection, windScale, remark, validStatus, insertTime, updateTime) 
     	values 
-    	(#{areaName}, #{areaCode}, #{date}, #{year}, #{month}, #{day}, #{temperatureMax}, #{temperatureMin}, #{summary}, #{windDirection}, #{windScale}, #{remark}, #{validStatus}, #{insertTime}, #{updateTime})
+    	(#{areaName}, #{areaCode}, #{yearMonth}, #{date}, #{year}, #{month}, #{day}, #{temperatureMax}, #{temperatureMin}, #{summary}, #{windDirection}, #{windScale}, #{remark}, #{validStatus}, #{insertTime}, #{updateTime})
     </insert>
     
     <insert id="insertBatchWeatherDay" parameterType="java.util.List">
     	insert into weather_day 
-    	(areaName, areaCode, date, year, month, day, temperatureMax, temperatureMin, summary, windDirection, windScale, remark, validStatus, insertTime, updateTime) 
+    	(areaName, areaCode, yearMonth, date, year, month, day, temperatureMax, temperatureMin, summary, windDirection, windScale, remark, validStatus, insertTime, updateTime) 
     	values 
     	<foreach collection="list" item="item" index="index" separator=",">
-            (#{item.areaName}, #{item.areaCode}, #{item.date}, #{item.year}, #{item.month}, #{item.day}, #{item.temperatureMax}, #{item.temperatureMin}, #{item.summary}, #{item.windDirection}, #{item.windScale}, #{item.remark}, #{item.validStatus}, #{item.insertTime}, #{item.updateTime})
+            (#{item.areaName}, #{item.areaCode}, #{item.yearMonth}, #{item.date}, #{item.year}, #{item.month}, #{item.day}, #{item.temperatureMax}, #{item.temperatureMin}, #{item.summary}, #{item.windDirection}, #{item.windScale}, #{item.remark}, #{item.validStatus}, #{item.insertTime}, #{item.updateTime})
         </foreach>
     </insert>
     
     <!--  id指定方法名  parameterType指定参数类型 resultType返回参数类型 #{userName}对应User表里面的字段N要大写不然映射报错   -->
     <select id="findWeatherDaysByDate" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherDay">
-        SELECT * FROM weather_day WHERE date = #{date} and areaName = #{areaName}
+        SELECT * FROM weather_day WHERE date = #{date} and areaCode = #{areaCode}
     </select>
 	
 	<select id="findWeatherDaysByYear" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherDay">
-        SELECT * FROM weather_day WHERE year = #{year} and areaName = #{areaName}
+        SELECT * FROM weather_day WHERE year = #{year} and areaCode = #{areaCode}
     </select>
     
     <select id="findWeatherDaysByMonth" parameterType="String" resultType="com.yan.weather.schema.mysql.WeatherDay">
-        SELECT * FROM weather_day WHERE month = #{month} and areaName = #{areaName}
+        SELECT * FROM weather_day WHERE yearMonth = #{yearMonth} and areaCode = #{areaCode}
     </select>
 
 	<select id="countWeatherDaysByCondition" parameterType="String" resultType="long">
@@ -39,7 +39,10 @@
     			areaName=#{areaName}
     		</if>
     		<if test="areaCode != null and areaCode != ''">
-    			areaCode=#{areaCode}
+    			and areaCode=#{areaCode}
+    		</if>
+    		<if test="yearMonth != null and yearMonth != ''">
+    			and yearMonth=#{yearMonth}
     		</if>
     		<if test="date != null and date != ''">
     			and date = #{date}
@@ -67,7 +70,10 @@
     			areaName=#{areaName}
     		</if>
     		<if test="areaCode != null and areaCode != ''">
-    			areaCode=#{areaCode}
+    			and areaCode=#{areaCode}
+    		</if>
+    		<if test="yearMonth != null and yearMonth != ''">
+    			and yearMonth=#{yearMonth}
     		</if>
     		<if test="date != null and date != ''">
     			and date = #{date}
@@ -91,11 +97,11 @@
     </select>
     
     <delete id="deleteWeatherDayByDateArea" parameterType="java.util.Map">
-    	delete from weather_day where date = #{date} and areaName = #{areaName}
+    	delete from weather_day where date = #{date} and areaCode = #{areaCode}
     </delete>
     
     <update id="updateWeatherDayByDateArea" parameterType="com.yan.weather.schema.mysql.WeatherDay">
-    	update weather_day set areaCode = #{areaCode}, year=#{year}, month=#{month}, day=#{day}, temperatureMax=#{temperatureMax}, temperatureMin=#{temperatureMin}, summary=#{summary}, windDirection=#{windDirection}, windScale=#{windScale}, remark=#{remark}, validStatus=#{validStatus}, updateTime=#{updateTime}
+    	update weather_day set areaCode=#{areaCode}, yearMonth=#{yearMonth}, year=#{year}, month=#{month}, day=#{day}, temperatureMax=#{temperatureMax}, temperatureMin=#{temperatureMin}, summary=#{summary}, windDirection=#{windDirection}, windScale=#{windScale}, remark=#{remark}, validStatus=#{validStatus}, updateTime=#{updateTime}
     	where date = #{date} and areaName = #{areaName}
     </update>
 </mapper>
