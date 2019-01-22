@@ -1,14 +1,13 @@
 package com.yan.weather.schedule;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -55,14 +54,26 @@ public class ScheduledTasks {
     @Autowired
     WeatherConfigMapper weatherConfigMapper;
     
-    @Scheduled(initialDelay = 1000, fixedDelay = 20000)    //定时器将在1秒后每隔20秒执行
+    // 一次crawlWeatherMonthTask定时任务中，处理的weatherCity条数
+    @Value("${schedule.weatherCityNum}")
+    private int scheduleWeatherCityNum;
+    
+    // 一次crawlWeatherDayTask定时任务中，处理的weatherMonth条数
+    @Value("${schedule.weatherMonthNum}")
+    private int scheduleWeatherMonthNum;
+    
+    @Scheduled(initialDelayString = "${schedule.weatherMonthTask.initialDelay}", fixedDelayString = "${schedule.weatherMonthTask.fixedDelay}")    //定时器将在1秒后每隔20秒执行
     public void crawlWeatherMonthTask() {
+    	
+    	if(scheduleWeatherCityNum <= 0){
+    		scheduleWeatherCityNum = 40;
+    	}
     	
     	WeatherConfig weatherConfig = weatherConfigMapper.findWeatherConfigByConfigCode(SCHEDUL_WEATHER_MONTH_CONFIG_CODE);
     	
     	if(weatherConfig.getConfigValue() != null && "1".equals(weatherConfig.getConfigValue().trim())){
     		// 查出前10条未被爬取的数据
-    		List<WeatherCity> weatherCities = weatherCityMapper.findWeatherCitiesUnCrawledFirst(10);
+    		List<WeatherCity> weatherCities = weatherCityMapper.findWeatherCitiesUnCrawledFirst(scheduleWeatherCityNum);
     		
     		if(weatherCities != null && weatherCities.size() > 0) {
     			logger.info("There are " + weatherCities.size() + " weather history(WeatherCity)datas to crawl int this trun.");
@@ -86,15 +97,19 @@ public class ScheduledTasks {
     	}
     }
     
-    @Scheduled(initialDelay = 20000, fixedDelay = 20000)    //定时器将在1秒后每隔30秒执行
+    @Scheduled(initialDelayString = "${schedule.weatherDayTask.initialDelay}", fixedDelayString = "${schedule.weatherDayTask.fixedDelay}")    //定时器将在1秒后每隔30秒执行
     public void crawlWeatherDayTask() {
+    	
+    	if(scheduleWeatherMonthNum <= 0){
+    		scheduleWeatherMonthNum = 40;
+    	}
     	
     	WeatherConfig weatherConfig = weatherConfigMapper.findWeatherConfigByConfigCode(SCHEDUL_WEATHER_DAY_CONFIG_CODE);
     	
     	if(weatherConfig.getConfigValue() != null && "1".equals(weatherConfig.getConfigValue().trim())){
     		
     		// 查出前10条未被爬取的数据
-    		List<WeatherMonth> weatherMonths = weatherMonthMapper.findWeatherMonthsUnCrawledFirst(40);
+    		List<WeatherMonth> weatherMonths = weatherMonthMapper.findWeatherMonthsUnCrawledFirst(scheduleWeatherMonthNum);
     		
     		if(weatherMonths != null && weatherMonths.size() > 0) {
     			logger.info("There are " + weatherMonths.size() + " weather history(WeatherMonth)datas to crawl int this trun.");
