@@ -41,21 +41,40 @@
         <pattern>[%d{yyyy-MM-dd HH:mm:ss}] [%thread] [%level] [%logger] - %m%n</pattern>
     </encoder>
   </appender>
-  
-  <logger name="com.yan.weather.controller.WeatherRestController" additivity="false" level="DEBUG">
-    <appender-ref ref="consolelog" />
-  </logger>
-  <logger name="com.yan.weather.service.impl.WeatherHistoryServiceImpl" additivity="false" level="DEBUG">
-    <appender-ref ref="consolelog" />
-  </logger>
-  <logger name="com.yan.weather.schedule.ScheduledTasks" additivity="false" level="DEBUG">
-    <appender-ref ref="consolelog" />
-  </logger>
 
-  <logger name="weatherHisLogger" additivity="false" level="DEBUG">
-    <appender-ref ref="consolelog" />
+  <appender name="weatherlog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  	<!-- 保存日志文件的路径 -->
+    <file>weatherlog.log</file>
+    <!-- 日志格式 -->
+    <encoder>
+        <pattern>[%d{yyyy-MM-dd HH:mm:ss}] [%thread] [%level] [%logger] - %m%n</pattern>
+    </encoder>
+    <!-- 循环政策：基于时间创建日志文件 -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- 日志文件名格式 -->
+      <fileNamePattern>weatherlog.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <!-- 最大保存时间：30天-->
+      <maxHistory>7</maxHistory>
+      <timeBasedFileNamingAndTriggeringPolicy
+	  	class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+	  	<!-- 最大64MB 超过最大值，会重新建一个文件-->
+	  	<maxFileSize>64 MB</maxFileSize>
+	  </timeBasedFileNamingAndTriggeringPolicy>
+    </rollingPolicy>
+  </appender>
+    
+  <logger name="com.yan.weather.controller.WeatherRestController" additivity="false" level="INFO">
+    <appender-ref ref="weatherlog" />
   </logger>
-
+  <logger name="com.yan.weather.service.impl.WeatherHistoryServiceImpl" additivity="false" level="INFO">
+    <appender-ref ref="weatherlog" />
+  </logger>
+  <logger name="com.yan.weather.schedule.ScheduledTasks" additivity="false" level="INFO">
+    <appender-ref ref="weatherlog" />
+  </logger>
+  <logger name="weatherHisLogger" additivity="false" level="INFO">
+    <appender-ref ref="weatherlog" />
+  </logger>
 
   <appender name="disruptorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
      <!-- 保存日志文件的路径 -->
@@ -67,9 +86,14 @@
     <!-- 循环政策：基于时间创建日志文件 -->
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- 日志文件名格式 -->
-      <fileNamePattern>disruptorLog.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <fileNamePattern>disruptorLog.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <!-- 最大保存时间：30天-->
-      <maxHistory>30</maxHistory>
+      <maxHistory>7</maxHistory>
+      <timeBasedFileNamingAndTriggeringPolicy
+	  	class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+	  	<!-- 最大64MB 超过最大值，会重新建一个文件-->
+	  	<maxFileSize>64 MB</maxFileSize>
+	  </timeBasedFileNamingAndTriggeringPolicy>
     </rollingPolicy>
   </appender>
 
